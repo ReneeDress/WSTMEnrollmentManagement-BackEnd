@@ -38,8 +38,7 @@ def ghmm():
 @app.route('/teacher', methods=["GET", "POST"])
 def teacher():
     view = "T_NOP"
-    sqlheadphase = "SELECT * FROM information_schema.columns WHERE TABLE_SCHEMA='%s' AND TABLE_NAME='%s';" % (
-        database, view)
+    sqlheadphase = "SELECT * FROM information_schema.columns WHERE TABLE_SCHEMA='%s' AND TABLE_NAME='%s';" % (database, view)
     sqlphase = "SELECT * FROM %s;" % view
     tea = select(hostaddr, usr, pwd, hostport, database, sqlphase, sqlheadphase)
 
@@ -114,6 +113,40 @@ def login():
         }
 
     return json.dumps(userinfo, cls=DateEncoder)
+
+
+@app.route('/modifypwd', methods=["GET", "POST"])
+def modifyPwd():
+    teacher = ghmm()
+    student = xhmm()
+    reqJson = request.get_json(silent=True)
+    print(reqJson)
+    type = reqJson['usertype']
+    id = reqJson['id']
+    oldpwd = reqJson['oldpwd']
+    newpwd = reqJson['newpwd']
+    if type:
+        tea = {
+            'gh': id,
+            'xm': oldpwd
+        }
+        if tea in teacher:
+            sqlphase = "UPDATE T SET mm='%s' WHERE gh='%s';" %(newpwd, id)
+            ret = change(hostaddr, usr, pwd, hostport, database, sqlphase, None)
+            return ret
+        else:
+            return 'oldpwdwrong'
+    else:
+        stu = {
+            'xh': id,
+            'xm': oldpwd
+        }
+        if stu in student:
+            sqlphase = "UPDATE S SET mm='%s' WHERE xh='%s';" % (newpwd, id)
+            ret = change(hostaddr, usr, pwd, hostport, database, sqlphase, None)
+            return ret
+        else:
+            return 'oldpwdwrong'
 
 
 @app.route('/avaterm/<yearrange>', methods=['GET', 'POST'])
@@ -222,6 +255,71 @@ def addNew(view):
         return 'error'
 
 
+@app.route('/modItem/<view>', methods=['GET', 'POST'])
+def modifyItem(view):
+    reqJson = request.get_json(silent=True)
+    try:
+        if view == 'S':
+            xh = reqJson['xh']
+            xm = reqJson['xm']
+            xb = reqJson['xb']
+            csrq = reqJson['csrq']
+            jg = reqJson['jg']
+            sjhm = reqJson['sjhm']
+            yxh = reqJson['yxh']
+            if csrq == '':
+                csrq = 'Null'
+            if jg == '':
+                jg = '中国'
+            if sjhm == '':
+                sjhm = '13420160327'
+            selsql = "SELECT xh FROM %s;" % view
+            selres = select(hostaddr, usr, pwd, hostport, database, selsql, None)
+            Dxh = {'a': xh}
+            if Dxh not in selres:
+                return 'repeat'
+            sqlphase = "UPDATE %s SET xm='%s', xb='%s', csrq='%s', jg='%s', sjhm='%s', yxh='%s' WHERE xh='%s';" % (view, xm, xb, csrq, jg, sjhm, yxh, xh)
+            sqlphase = sqlphase.replace("'Null'", "Null")
+            print(sqlphase)
+            resmsg = change(hostaddr, usr, pwd, hostport, database, sqlphase, None)
+            return resmsg
+        elif view == 'T':
+            gh = reqJson['gh']
+            xm = reqJson['xm']
+            xb = reqJson['xb']
+            csrq = reqJson['csrq']
+            zc = reqJson['zc']
+            yxh = reqJson['yxh']
+            if csrq == '':
+                csrq = 'Null'
+            selsql = "SELECT gh FROM %s;" % view
+            selres = select(hostaddr, usr, pwd, hostport, database, selsql, None)
+            Dgh = {'a': gh}
+            if Dgh not in selres:
+                return 'repeat'
+            sqlphase = "UPDATE %s SET xm='%s', xb='%s', csrq='%s', zc='%s', yxh='%s' WHERE gh='%s';" % (view, xm, xb, csrq, zc, yxh, gh)
+            sqlphase = sqlphase.replace("'Null'", "Null")
+            resmsg = change(hostaddr, usr, pwd, hostport, database, sqlphase, None)
+            return resmsg
+        elif view == 'D':
+            yxh = reqJson['yxh']
+            mc = reqJson['mc']
+            dz = reqJson['dz']
+            lxdh = reqJson['lxdh']
+            selsql = "SELECT yxh FROM %s;" % view
+            selres = select(hostaddr, usr, pwd, hostport, database, selsql, None)
+            Dyxh = {'a': yxh}
+            if Dyxh not in selres:
+                return 'repeat'
+            sqlphase = "UPDATE %s SET mc='%s', dz='%s', lxdh='%s' WHERE yxh='%s';" % (view, mc, dz, lxdh, yxh)
+            resmsg = change(hostaddr, usr, pwd, hostport, database, sqlphase, None)
+            return resmsg
+        else:
+            return 'error'
+    except:
+        return 'error'
+
+
 @app.route('/delItem/<view>', methods=['GET', 'POST'])
 def DelItem(view):
     reqJson = request.get_json(silent=True)
@@ -262,6 +360,53 @@ def CourseAll():
     courseall = select(hostaddr, usr, pwd, hostport, database, sqlphase, sqlheadphase)
 
     return json.dumps(courseall, cls=OnlyDateEncoder)
+
+
+@app.route('/courseall/new', methods=['GET', 'POST'])
+def CourseAllNew():
+    view = "C"
+    reqJson = request.get_json(silent=True)
+    kh = reqJson['khNew']
+    km = reqJson['kmNew']
+    yxh = reqJson['yxhNew']
+    xf = reqJson['xfNew']
+    xs = reqJson['xsNew']
+
+    selectsql = "SELECT kh FROM %s" % view
+    allcourse = select(hostaddr, usr, pwd, hostport, database, selectsql, None)
+    print(allcourse)
+    jsonnew = {
+        'a': kh
+    }
+    if jsonnew in allcourse:
+        return 'repeat'
+    sqlphase = "INSERT INTO %s(kh, km, yxh, xf, xs) VALUES('%s', '%s', '%s', %u, %u);" % (view, kh, km, yxh, xf, xs)
+    try:
+        ret = change(hostaddr, usr, pwd, hostport, database, sqlphase, None)
+    except:
+        return 'error'
+    return ret
+
+
+@app.route('/courseall/del', methods=['GET', 'POST'])
+def CourseAllDel():
+    view = "C"
+    reqJson = request.get_json(silent=True)
+    kh = reqJson['kh']
+    selectsql = "SELECT kh FROM %s" % view
+    allcourse = select(hostaddr, usr, pwd, hostport, database, selectsql, None)
+    print(allcourse)
+    jsonnew = {
+        'a': kh
+    }
+    if jsonnew not in allcourse:
+        return 'repeat'
+    sqlphase = "DELETE FROM %s WHERE kh='%s';" % (view, kh)
+    try:
+        ret = change(hostaddr, usr, pwd, hostport, database, sqlphase, None)
+    except:
+        return 'error'
+    return ret
 
 
 @app.route('/courseopen', methods=['GET', 'POST'])
@@ -367,7 +512,7 @@ def CourseDetail(xq, kh, gh):
     sqlphase = "SELECT * FROM %s WHERE xq='%s' AND kh='%s' AND gh='%s';" % (view, xq, kh, gh)
     coursedetail = select(hostaddr, usr, pwd, hostport, database, sqlphase, sqlheadphase)
 
-    return json.dumps(coursedetail, cls=OnlyDateEncoder)
+    return json.dumps(coursedetail, cls=DecimalEncoder)
 
 
 @app.route('/coursedetail/<xq>/<xh>', methods=['GET', 'POST'])
@@ -387,7 +532,7 @@ def CourseDetailStuTerm(xq, xh, type=True):
         eachcourse['xf'] = eachcourse.pop('h')
         eachcourse['zt'] = eachcourse.pop('i')
     if type:
-        return json.dumps(coursedetailstuterm, cls=OnlyDateEncoder)
+        return json.dumps(coursedetailstuterm, cls=DecimalEncoder)
     else:
         return coursedetailstuterm
 
@@ -529,7 +674,8 @@ def GradeAll(xh):
 def GradeAllGPA(xh):
     view = "FullE"
     # sqlheadphase = "SELECT * FROM information_schema.columns WHERE TABLE_SCHEMA='%s' AND TABLE_NAME='%s';" % (database, view)
-    sqlphase = "SELECT xq, SUM(xf) zxf, ROUND(AVG(zpcj), 2) pjcj, Round(SUM(xf*jd)/SUM(xf), 3) pjjd FROM %s WHERE xh='%s' AND zpcj IS NOT NULL AND jd IS NOT NULL GROUP BY xq ORDER BY xq;" % (view, xh)
+    # sqlphase = "SELECT xq, SUM(xf) zxf, ROUND(AVG(zpcj), 2) pjcj, Round(SUM(xf*jd)/SUM(xf), 3) pjjd FROM %s WHERE xh='%s' AND zpcj IS NOT NULL AND jd IS NOT NULL GROUP BY xq ORDER BY xq;" % (view, xh)
+    sqlphase = "SELECT DISTINCT O.xq, zxf, pjcj, pjjd FROM O LEFT JOIN (SELECT xq, SUM(xf) zxf, ROUND(AVG(zpcj), 2) pjcj, Round(SUM(xf*jd)/SUM(xf), 3) pjjd FROM %s WHERE xh='%s' AND zpcj IS NOT NULL AND jd IS NOT NULL GROUP BY xq) GPA ON O.xq = GPA.xq ORDER BY xq;" % (view, xh)
     try:
         allGPA = select(hostaddr, usr, pwd, hostport, database, sqlphase, None)
         for xqGPA in allGPA:
