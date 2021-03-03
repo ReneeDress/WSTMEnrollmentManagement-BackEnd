@@ -23,7 +23,7 @@ database = "SCHOOL"
 
 @app.route('/')
 def hello_world():
-    return 'Hello World!'
+    return 'Hello School!'
 
 
 def ghmm():
@@ -35,7 +35,10 @@ def ghmm():
     return gh
 
 
-@app.route('/teacher', methods=["GET", "POST"])
+'''
+    获取所有教师信息（不含密码）
+'''
+@app.route('/teacher', methods=["GET"])
 def teacher():
     view = "T_NOP"
     sqlheadphase = "SELECT * FROM information_schema.columns WHERE TABLE_SCHEMA='%s' AND TABLE_NAME='%s';" % (database, view)
@@ -55,7 +58,10 @@ def xhmm():
     return xh
 
 
-@app.route('/student', methods=["GET", "POST"])
+'''
+    获取所有学生信息（不含密码）
+'''
+@app.route('/student', methods=["GET"])
 def student():
     view = "S_NOP"
     sqlheadphase = "SELECT * FROM information_schema.columns WHERE TABLE_SCHEMA='%s' AND TABLE_NAME='%s';" % (
@@ -66,7 +72,10 @@ def student():
     return json.dumps(stu, cls=OnlyDateEncoder)
 
 
-@app.route('/student/<xh>', methods=["GET", "POST"])
+'''
+    获取指定学生信息（不含密码）
+'''
+@app.route('/student/<xh>', methods=["GET"])
 def studentXh(xh):
     view = "S_NOP"
     sqlheadphase = "SELECT * FROM information_schema.columns WHERE TABLE_SCHEMA='%s' AND TABLE_NAME='%s';" % (database, view)
@@ -76,6 +85,9 @@ def studentXh(xh):
     return json.dumps(stu, cls=OnlyDateEncoder)
 
 
+'''
+    登录验证
+'''
 @app.route('/login', methods=["GET", "POST"])
 def login():
     teacher = ghmm()
@@ -115,6 +127,9 @@ def login():
     return json.dumps(userinfo, cls=DateEncoder)
 
 
+'''
+    
+'''
 @app.route('/modifypwd', methods=["GET", "POST"])
 def modifyPwd():
     teacher = ghmm()
@@ -149,6 +164,9 @@ def modifyPwd():
             return 'oldpwdwrong'
 
 
+'''
+    获取前后yearrange年学期信息
+'''
 @app.route('/avaterm/<yearrange>', methods=['GET', 'POST'])
 def avaterm(yearrange):
     try:
@@ -169,6 +187,9 @@ def avaterm(yearrange):
         return 'error'
 
 
+'''
+    获取已有开课学期信息
+'''
 @app.route('/allterm', methods=['GET', 'POST'])
 def allterm():
     view = "O"
@@ -180,6 +201,9 @@ def allterm():
     return json.dumps(allxq, cls=OnlyDateEncoder)
 
 
+'''
+    获取所有院系信息
+'''
 @app.route('/alldept', methods=['GET', 'POST'])
 def alldept():
     view = "D"
@@ -190,6 +214,9 @@ def alldept():
     return json.dumps(allxy, cls=OnlyDateEncoder)
 
 
+'''
+    新增学生/教师/院系信息
+'''
 @app.route('/addNew/<view>', methods=['GET', 'POST'])
 def addNew(view):
     reqJson = request.get_json(silent=True)
@@ -255,6 +282,10 @@ def addNew(view):
         return 'error'
 
 
+
+'''
+    编辑学生/教师/院系信息
+'''
 @app.route('/modItem/<view>', methods=['GET', 'POST'])
 def modifyItem(view):
     reqJson = request.get_json(silent=True)
@@ -320,6 +351,9 @@ def modifyItem(view):
         return 'error'
 
 
+'''
+    删除学生/教师/院系信息
+'''
 @app.route('/delItem/<view>', methods=['GET', 'POST'])
 def DelItem(view):
     reqJson = request.get_json(silent=True)
@@ -342,7 +376,10 @@ def DelItem(view):
         return 'error'
 
 
-@app.route('/courseedit', methods=['GET', 'POST'])
+'''
+    获取所有开课信息（含选课人数）
+'''
+@app.route('/courseedit', methods=['GET'])
 def CourseEdit():
     view = "CourseEdit"
     sqlheadphase = "SELECT * FROM information_schema.columns WHERE TABLE_SCHEMA='%s' AND TABLE_NAME='%s';" % (database, view)
@@ -352,6 +389,9 @@ def CourseEdit():
     return json.dumps(courseedit, cls=OnlyDateEncoder)
 
 
+'''
+    获取所有开课信息（不含选课人数）
+'''
 @app.route('/courseall', methods=['GET', 'POST'])
 def CourseAll():
     view = "CourseAll"
@@ -362,6 +402,9 @@ def CourseAll():
     return json.dumps(courseall, cls=OnlyDateEncoder)
 
 
+'''
+    新增课程信息
+'''
 @app.route('/courseall/new', methods=['GET', 'POST'])
 def CourseAllNew():
     view = "C"
@@ -388,6 +431,9 @@ def CourseAllNew():
     return ret
 
 
+'''
+    删除课程信息
+'''
 @app.route('/courseall/del', methods=['GET', 'POST'])
 def CourseAllDel():
     view = "C"
@@ -409,7 +455,10 @@ def CourseAllDel():
     return ret
 
 
-@app.route('/courseopen', methods=['GET', 'POST'])
+'''
+    获取所有开课信息（不含选课人数）
+'''
+@app.route('/courseopen', methods=['GET'])
 def CourseOpen():
     view = "CourseOpen"
     sqlheadphase = "SELECT * FROM information_schema.columns WHERE TABLE_SCHEMA='%s' AND TABLE_NAME='%s';" % (database, view)
@@ -419,7 +468,10 @@ def CourseOpen():
     return json.dumps(courseopen, cls=OnlyDateEncoder)
 
 
-@app.route('/courseopen/<xq>', methods=['GET', 'POST'])
+'''
+    获取指定学期开课信息
+'''
+@app.route('/courseopen/<xq>', methods=['GET'])
 def CourseOpenTerm(xq):
     view = "CourseOpen"
     sqlheadphase = "SELECT * FROM information_schema.columns WHERE TABLE_SCHEMA='%s' AND TABLE_NAME='%s';" % (database, view)
@@ -429,6 +481,9 @@ def CourseOpenTerm(xq):
     return json.dumps(courseopenterm, cls=OnlyDateEncoder)
 
 
+'''
+    新增开课信息
+'''
 @app.route('/courseopenNew', methods=['GET', 'POST'])
 def CourseOpenNew():
     view = "O"
@@ -446,6 +501,9 @@ def CourseOpenNew():
         return 'error'
 
 
+'''
+    删除开课信息
+'''
 @app.route('/courseopenDel', methods=['GET', 'POST'])
 def CourseOpenDel():
     view = "O"
@@ -474,6 +532,9 @@ def CourseOpenDel():
         return 'error'
 
 
+'''
+    强制删除开课信息
+'''
 @app.route('/courseopenDel/force', methods=['GET', 'POST'])
 def CourseOpenDelForce():
     view = "O"
@@ -495,6 +556,9 @@ def CourseOpenDelForce():
         return 'error'
 
 
+'''
+    获取指定课程开课信息
+'''
 @app.route('/courseopen/<xq>/<kh>/<gh>', methods=['GET', 'POST'])
 def CourseOpenInfo(xq, kh, gh):
     view = "CourseOpen"
@@ -505,6 +569,9 @@ def CourseOpenInfo(xq, kh, gh):
     return json.dumps(courseopeninfo, cls=OnlyDateEncoder)
 
 
+'''
+    获取指定课程选课信息（不含成绩）
+'''
 @app.route('/coursedetail/<xq>/<kh>/<gh>', methods=['GET', 'POST'])
 def CourseDetail(xq, kh, gh):
     view = "FullE"
@@ -515,6 +582,9 @@ def CourseDetail(xq, kh, gh):
     return json.dumps(coursedetail, cls=DecimalEncoder)
 
 
+'''
+    获取指定学生学期选课信息
+'''
 @app.route('/coursedetail/<xq>/<xh>', methods=['GET', 'POST'])
 def CourseDetailStuTerm(xq, xh, type=True):
     view = "FullE"
@@ -537,6 +607,9 @@ def CourseDetailStuTerm(xq, xh, type=True):
         return coursedetailstuterm
 
 
+'''
+    获取指定课程选课信息（含成绩）
+'''
 @app.route('/gradedetail/<xq>/<kh>/<gh>', methods=['GET', 'POST'])
 def GradeDetail(xq, kh, gh):
     view = "FullE"
@@ -547,6 +620,9 @@ def GradeDetail(xq, kh, gh):
     return json.dumps(gradedetail, cls=DecimalEncoder)
 
 
+'''
+    指定学生选课
+'''
 @app.route('/newelection', methods=['GET', 'POST'])
 def NewElection():
     view = "E"
@@ -576,6 +652,9 @@ def NewElection():
         return 'error'
 
 
+'''
+    指定学生退课
+'''
 @app.route('/delelection', methods=['GET', 'POST'])
 def DelElection():
     view = "E"
@@ -605,6 +684,9 @@ def DelElection():
         return 'error'
 
 
+'''
+    更新指定课程选课信息（含成绩）
+'''
 @app.route('/gradeUpdate', methods=['GET', 'POST'])
 def GradeUpdate():
     view = "E"
@@ -658,6 +740,9 @@ def GradeUpdate():
     return resmsg
 
 
+'''
+    获取指定学生学期选课信息（含成绩）
+'''
 @app.route('/gradeAll/<xh>', methods=['GET', 'POST'])
 def GradeAll(xh):
     view = "FullE"
@@ -670,6 +755,9 @@ def GradeAll(xh):
         return 'error'
 
 
+'''
+    获取指定学生所有成绩统计信息
+'''
 @app.route('/gradeAll/GPA/<xh>', methods=['GET', 'POST'])
 def GradeAllGPA(xh):
     view = "FullE"
@@ -798,6 +886,9 @@ def WeekDayChange(Chinese):
         return 'error'
 
 
+'''
+    获取指定学期学生课表
+'''
 @app.route('/schedule/<xq>/<xh>', methods=['GET', 'POST'])
 def schedule(xq, xh):
     coursedetail = CourseDetailStuTerm(xq, xh, False)
