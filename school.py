@@ -16,10 +16,6 @@ pwd = "school-db+20210308"
 hostport = 10157
 database = "SCHOOL"
 
-# view = "C"
-# sqlheadphase = "SELECT * FROM information_schema.columns WHERE TABLE_SCHEMA='%s' AND TABLE_NAME='%s';" % (database, view)
-# sqlphase = "SELECT * FROM %s;" % view
-
 
 @app.route('/')
 def hello_world():
