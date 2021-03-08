@@ -11,8 +11,8 @@ app.secret_key = 'schooldatabase'  # Change this!
 CORS(app, supports_credentials=True)
 
 hostaddr = "cdb-l8bcqqr2.bj.tencentcdb.com"
-usr = "root"
-pwd = "061224renee"
+usr = "school"
+pwd = "school-db+20210308"
 hostport = 10157
 database = "SCHOOL"
 
